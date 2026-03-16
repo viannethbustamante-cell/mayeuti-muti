@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mayeuti — Donde el futuro se lee, se piensa y se construye</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #5BB8E8;
+  --azul-oscuro: #2D8BC4;
+  --azul-claro: #E3F5FF;
+  --verde: #7DD97A;
+  --verde-oscuro: #4BB847;
+  --verde-claro: #E8F8E8;
+  --dorado: #F5C842;
+  --dorado-oscuro: #D4A017;
+  --gris-suave: #F7F9FC;
+  --gris-borde: #E0EAF4;
+  --texto: #1A2744;
+  --texto-suave: #4A6080;
+  --radio: 20px;
+  --radio-grande: 28px;
+  --sombra: 0 4px 20px rgba(45,139,196,0.12);
+  --sombra-hover: 0 8px 32px rgba(45,139,196,0.22);
+
+  /* 6to grado colores especiales */
+  --sexto-purpura: #7C3AED;
+  --sexto-purpura-claro: #F3EEFF;
+  --sexto-rosa: #BE185D;
+  --sexto-esmeralda: #065F46;
+  --sexto-ambar: #92400E;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nunito',sans-serif; background:var(--gris-suave); color:var(--texto); min-height:100vh; overflow-x:hidden; }
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ══════════════════════════════
+   PANTALLA API
+══════════════════════════════ */
+#screen-api {
+  background: linear-gradient(135deg,var(--azul-claro) 0%,#fff 50%,var(--verde-claro) 100%);
+  align-items:center; justify-content:center; padding:20px;
+}
+.api-card {
+  background:#fff; border-radius:var(--radio-grande); padding:40px;
+  max-width:460px; width:100%; box-shadow:var(--sombra-hover); text-align:center;
+  border:2px solid var(--gris-borde);
+}
+.bee-logo { font-size:56px; margin-bottom:12px; animation:float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.api-card h1 { font-family:'Baloo 2',sans-serif; font-size:2rem; font-weight:800; color:var(--azul-oscuro); margin-bottom:4px; }
+.api-card p { color:var(--texto-suave); font-size:.95rem; margin-bottom:24px; }
+.input-group { margin-bottom:16px; text-align:left; }
+.input-group label { font-weight:700; font-size:.85rem; color:var(--texto); display:block; margin-bottom:6px; }
+.input-field { width:100%; padding:14px 16px; border:2px solid var(--gris-borde); border-radius:14px; font-family:'Nunito',sans-serif; font-size:.95rem; color:var(--texto); transition:border-color .2s; outline:none; }
+.input-field:focus { border-color:var(--azul); }
+.btn-primary { width:100%; padding:16px; background:linear-gradient(135deg,var(--azul),var(--azul-oscuro)); color:#fff; border:none; border-radius:14px; font-family:'Baloo 2',sans-serif; font-size:1.05rem; font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 4px 14px rgba(91,184,232,.4); }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(91,184,232,.5); }
+.api-note { margin-top:14px; padding:12px; background:var(--azul-claro); border-radius:12px; font-size:.82rem; color:var(--azul-oscuro); }
+
+/* ══════════════════════════════
+   PANTALLA REGISTRO
+══════════════════════════════ */
+#screen-registro {
+  background:linear-gradient(160deg,var(--azul-claro) 0%,#fff 40%,var(--verde-claro) 100%);
+  align-items:center; justify-content:center; padding:20px;
+}
+.registro-card { background:#fff; border-radius:var(--radio-grande); padding:36px 32px; max-width:480px; width:100%; box-shadow:var(--sombra-hover); border:2px solid var(--gris-borde); }
+.registro-header { text-align:center; margin-bottom:28px; }
+.registro-header .bee { font-size:52px; animation:float 3s ease-in-out infinite; }
+.registro-header h2 { font-family:'Baloo 2',sans-serif; font-size:1.7rem; font-weight:800; color:var(--azul-oscuro); }
+.grado-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+.grado-btn { padding:12px 4px; border:2px solid var(--gris-borde); border-radius:12px; background:#fff; font-family:'Nunito',sans-serif; font-weight:700; font-size:.8rem; color:var(--texto-suave); cursor:pointer; transition:all .2s; text-align:center; }
+.grado-btn:hover { border-color:var(--azul); color:var(--azul); }
+.grado-btn.selected { background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 3px 12px rgba(91,184,232,.4); }
+.grado-btn.sexto { border-color:var(--sexto-purpura); color:var(--sexto-purpura); }
+.grado-btn.sexto.selected { background:var(--sexto-purpura); border-color:var(--sexto-purpura); color:#fff; box-shadow:0 3px 12px rgba(124,58,237,.4); }
+.error-msg { color:#e05555; font-size:.82rem; margin-top:6px; display:none; }
+.error-msg.show { display:block; }
+.sexto-hint { margin-top:10px; padding:10px 14px; background:var(--sexto-purpura-claro); border-radius:12px; font-size:.82rem; color:var(--sexto-purpura); font-weight:700; display:none; }
+.sexto-hint.show { display:block; }
+
+/* ══════════════════════════════
+   TOP BAR
+══════════════════════════════ */
+.top-bar { background:#fff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px rgba(0,0,0,.06); position:sticky; top:0; z-index:100; }
+.top-bar-left { display:flex; align-items:center; gap:10px; }
+.top-bar-logo { font-size:28px; }
+.top-bar-name { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; color:var(--azul-oscuro); }
+.top-bar-grade { font-size:.75rem; color:var(--texto-suave); font-weight:600; }
+.top-bar-grade.sexto-grade { color:var(--sexto-purpura); font-weight:800; }
+.top-bar-right { display:flex; align-items:center; gap:12px; }
+.stars-badge { display:flex; align-items:center; gap:5px; background:linear-gradient(135deg,#FFF8E1,#FFF3C4); border:2px solid var(--dorado); border-radius:20px; padding:6px 12px; font-weight:800; font-size:.9rem; color:var(--dorado-oscuro); }
+.album-btn { background:linear-gradient(135deg,var(--dorado),var(--dorado-oscuro)); border:none; border-radius:12px; padding:8px 14px; font-family:'Nunito',sans-serif; font-weight:800; font-size:.82rem; color:#fff; cursor:pointer; transition:all .2s; }
+.album-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(245,200,66,.4); }
+
+/* ══════════════════════════════
+   HOME
+══════════════════════════════ */
+#screen-home { background:var(--gris-suave); }
+.home-content { padding:24px 20px; max-width:960px; margin:0 auto; width:100%; }
+.home-welcome { background:linear-gradient(135deg,var(--azul),var(--azul-oscuro)); border-radius:var(--radio-grande); padding:24px; color:#fff; margin-bottom:28px; position:relative; overflow:hidden; }
+.home-welcome::after { content:'🐝'; position:absolute; right:20px; bottom:-5px; font-size:64px; opacity:.3; }
+.home-welcome h2 { font-family:'Baloo 2',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:4px; }
+.home-welcome p { font-size:.9rem; opacity:.9; }
+
+/* Banner especial 6to */
+.banner-sexto { background:linear-gradient(135deg,var(--sexto-purpura),#5B21B6); border-radius:var(--radio-grande); padding:20px 24px; color:#fff; margin-bottom:24px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:all .25s; box-shadow:0 4px 20px rgba(124,58,237,.3); }
+.banner-sexto:hover { transform:translateY(-3px); box-shadow:0 8px 32px rgba(124,58,237,.4); }
+.banner-sexto-icon { font-size:48px; flex-shrink:0; }
+.banner-sexto h3 { font-family:'Baloo 2',sans-serif; font-size:1.2rem; font-weight:800; margin-bottom:4px; }
+.banner-sexto p { font-size:.85rem; opacity:.9; }
+.banner-sexto-badge { background:rgba(255,255,255,.2); border:2px solid rgba(255,255,255,.4); border-radius:20px; padding:4px 12px; font-size:.75rem; font-weight:800; margin-top:6px; display:inline-block; }
+
+.section-title { font-family:'Baloo 2',sans-serif; font-size:1.2rem; font-weight:800; color:var(--texto); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+
+.categorias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-bottom:32px; }
+.categoria-card { background:#fff; border-radius:var(--radio-grande); padding:20px; cursor:pointer; transition:all .25s; border:2px solid transparent; box-shadow:var(--sombra); position:relative; overflow:hidden; }
+.categoria-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+.cat-ciencia::before { background:linear-gradient(90deg,#5BB8E8,#2D8BC4); }
+.cat-animales::before { background:linear-gradient(90deg,#7DD97A,#4BB847); }
+.cat-emociones::before { background:linear-gradient(90deg,#FF8FAB,#E05E7E); }
+.cat-arte::before { background:linear-gradient(90deg,#A78BFA,#7C3AED); }
+.cat-superheroes::before { background:linear-gradient(90deg,#F5C842,#D4A017); }
+.cat-historia::before { background:linear-gradient(90deg,#FB923C,#EA580C); }
+.categoria-card:hover { transform:translateY(-4px); box-shadow:var(--sombra-hover); border-color:var(--gris-borde); }
+.cat-emoji { font-size:40px; margin-bottom:10px; }
+.cat-nombre { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.1rem; color:var(--texto); margin-bottom:4px; }
+.cat-desc { font-size:.82rem; color:var(--texto-suave); margin-bottom:12px; }
+.cat-progress { display:flex; align-items:center; gap:8px; }
+.progress-bar { flex:1; height:6px; background:var(--gris-borde); border-radius:3px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:3px; transition:width .5s ease; }
+.ciencia-fill{background:var(--azul)} .animales-fill{background:var(--verde)} .emociones-fill{background:#FF8FAB}
+.arte-fill{background:#A78BFA} .superheroes-fill{background:var(--dorado)} .historia-fill{background:#FB923C}
+.cat-count { font-size:.75rem; font-weight:700; color:var(--texto-suave); }
+
+/* ══════════════════════════════
+   PANTALLA 6TO GRADO
+══════════════════════════════ */
+#screen-sexto { background:linear-gradient(180deg,#F3EEFF 0%,#FAF8FF 100%); }
+.sexto-header { background:linear-gradient(135deg,var(--sexto-purpura),#5B21B6); padding:24px 20px; color:#fff; position:sticky; top:0; z-index:100; }
+.sexto-header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.sexto-header h2 { font-family:'Baloo 2',sans-serif; font-size:1.4rem; font-weight:800; }
+.sexto-header p { font-size:.85rem; opacity:.85; }
+.sexto-cats-tabs { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+.sexto-tab { padding:8px 16px; border-radius:20px; border:2px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; font-family:'Nunito',sans-serif; font-weight:700; font-size:.82rem; cursor:pointer; white-space:nowrap; transition:all .2s; flex-shrink:0; }
+.sexto-tab:hover { background:rgba(255,255,255,.2); }
+.sexto-tab.active { background:#fff; color:var(--sexto-purpura); border-color:#fff; }
+
+.sexto-content { padding:24px 20px; max-width:960px; margin:0 auto; }
+.sexto-cat-panel { display:none; }
+.sexto-cat-panel.active { display:block; }
+
+.sexto-cat-header { margin-bottom:20px; }
+.sexto-cat-header h3 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; color:var(--sexto-purpura); margin-bottom:6px; }
+.sexto-cat-header p { font-size:.9rem; color:var(--texto-suave); }
+
+.sexto-lecturas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+.sexto-lectura-card { background:#fff; border-radius:var(--radio-grande); overflow:hidden; box-shadow:var(--sombra); cursor:pointer; transition:all .25s; border:2px solid transparent; }
+.sexto-lectura-card:hover { transform:translateY(-3px); box-shadow:var(--sombra-hover); border-color:var(--sexto-purpura-claro); }
+.sexto-lectura-card.completada { border-color:var(--dorado); }
+.sexto-card-banner { height:80px; display:flex; align-items:center; justify-content:center; font-size:40px; }
+.clasica-banner { background:linear-gradient(135deg,#1E1B4B,#3730A3); }
+.latinoam-banner { background:linear-gradient(135deg,#064E3B,#065F46); }
+.poesia-banner { background:linear-gradient(135deg,#831843,#BE185D); }
+.sexto-card-body { padding:16px; }
+.sexto-lectura-titulo { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--texto); margin-bottom:4px; }
+.sexto-lectura-autor { font-size:.78rem; color:var(--texto-suave); font-style:italic; margin-bottom:8px; }
+.sexto-lectura-desc { font-size:.82rem; color:var(--texto-suave); line-height:1.4; margin-bottom:12px; }
+.sexto-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.tag { padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:700; }
+.tag-clasica { background:#EDE9FE; color:#5B21B6; }
+.tag-latinoam { background:#D1FAE5; color:#065F46; }
+.tag-poesia { background:#FCE7F3; color:#BE185D; }
+.tag-completada { background:#FFF8E1; color:var(--dorado-oscuro); }
+.sexto-lectura-btn { width:100%; padding:10px; background:linear-gradient(135deg,var(--sexto-purpura-claro),#EDE9FE); border:none; border-radius:12px; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:.85rem; color:var(--sexto-purpura); cursor:pointer; transition:all .2s; }
+.sexto-lectura-btn:hover { background:linear-gradient(135deg,#EDE9FE,#DDD6FE); }
+
+/* ══════════════════════════════
+   PANTALLA LECTURAS (1-5)
+══════════════════════════════ */
+#screen-lecturas { background:var(--gris-suave); }
+.lecturas-header { background:#fff; padding:20px; border-bottom:2px solid var(--gris-borde); position:sticky; top:0; z-index:100; }
+.back-btn { display:flex; align-items:center; gap:6px; background:none; border:none; font-family:'Nunito',sans-serif; font-weight:700; font-size:.9rem; color:var(--azul-oscuro); cursor:pointer; padding:8px 0; }
+.back-btn:hover { color:var(--azul); }
+.back-btn.purple { color:var(--sexto-purpura); }
+.lecturas-title { font-family:'Baloo 2',sans-serif; font-size:1.4rem; font-weight:800; color:var(--texto); margin-top:8px; }
+.lecturas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding:24px 20px; max-width:960px; margin:0 auto; }
+.lectura-card { background:#fff; border-radius:var(--radio-grande); padding:20px; cursor:pointer; transition:all .25s; box-shadow:var(--sombra); border:2px solid transparent; }
+.lectura-card:hover { transform:translateY(-3px); box-shadow:var(--sombra-hover); border-color:var(--azul-claro); }
+.lectura-card.completada { border-color:var(--dorado); background:linear-gradient(135deg,#FFFDF0,#fff); }
+.lectura-emoji { font-size:32px; margin-bottom:10px; }
+.lectura-titulo { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; color:var(--texto); margin-bottom:6px; }
+.lectura-desc { font-size:.82rem; color:var(--texto-suave); margin-bottom:12px; line-height:1.4; }
+.lectura-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:20px; font-size:.75rem; font-weight:700; }
+.badge-nueva { background:var(--azul-claro); color:var(--azul-oscuro); }
+.badge-completada { background:#FFF8E1; color:var(--dorado-oscuro); }
+.leer-btn { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding:10px 14px; background:linear-gradient(135deg,var(--azul-claro),#D0EEFF); border-radius:12px; font-weight:700; font-size:.85rem; color:var(--azul-oscuro); }
+
+/* ══════════════════════════════
+   PANTALLA CHAT (compartida)
+══════════════════════════════ */
+#screen-chat { background:var(--gris-suave); flex-direction:row; height:100vh; overflow:hidden; }
+.chat-left { width:45%; background:#fff; border-right:2px solid var(--gris-borde); display:flex; flex-direction:column; overflow:hidden; }
+.chat-left-header { padding:16px 20px; border-bottom:2px solid var(--gris-borde); background:#fff; flex-shrink:0; }
+.lectura-contenido { padding:20px; overflow-y:auto; flex:1; line-height:1.8; font-size:1rem; color:var(--texto); }
+.lectura-contenido h3 { font-family:'Baloo 2',sans-serif; font-size:1.2rem; font-weight:800; color:var(--azul-oscuro); margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid var(--azul-claro); }
+.lectura-contenido p { margin-bottom:12px; }
+
+/* Estilos especiales para 6to dentro del texto */
+.lectura-contenido.sexto-modo h3 { font-family:'Playfair Display',serif; color:var(--sexto-purpura); border-bottom-color:var(--sexto-purpura-claro); }
+.info-extra-btn { display:flex; align-items:center; gap:8px; margin:16px 0 8px; padding:12px 16px; background:var(--sexto-purpura-claro); border:2px solid var(--sexto-purpura); border-radius:14px; font-family:'Nunito',sans-serif; font-weight:700; font-size:.85rem; color:var(--sexto-purpura); cursor:pointer; transition:all .2s; width:100%; }
+.info-extra-btn:hover { background:#EDE9FE; }
+.info-extra-panel { background:linear-gradient(135deg,#F3EEFF,#FAF8FF); border:2px solid var(--sexto-purpura-claro); border-radius:14px; padding:16px; margin-bottom:12px; display:none; }
+.info-extra-panel.open { display:block; animation:fadeIn .3s ease; }
+.info-extra-panel h4 { font-family:'Playfair Display',serif; font-size:1rem; color:var(--sexto-purpura); margin-bottom:8px; }
+.info-extra-panel p { font-size:.85rem; color:var(--texto); margin-bottom:8px; line-height:1.6; }
+.fragmento-box { background:#fff; border-left:4px solid var(--sexto-purpura); border-radius:0 12px 12px 0; padding:12px 16px; margin:10px 0; font-family:'Playfair Display',serif; font-style:italic; font-size:.9rem; color:var(--texto); line-height:1.7; }
+.curiosidad-chip { display:inline-flex; align-items:center; gap:6px; background:var(--sexto-purpura); color:#fff; padding:5px 12px; border-radius:20px; font-size:.78rem; font-weight:700; margin:4px 2px; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+.chat-right { width:55%; display:flex; flex-direction:column; overflow:hidden; }
+.chat-header { padding:14px 20px; background:#fff; border-bottom:2px solid var(--gris-borde); display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.muti-avatar { width:44px; height:44px; background:linear-gradient(135deg,var(--dorado),var(--dorado-oscuro)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 2px 10px rgba(245,200,66,.4); animation:float 3s ease-in-out infinite; }
+.muti-info h4 { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; color:var(--texto); }
+.muti-info p { font-size:.75rem; color:var(--texto-suave); }
+.muti-status { width:8px; height:8px; background:var(--verde); border-radius:50%; display:inline-block; margin-right:4px; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.chat-messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px; }
+.chat-messages::-webkit-scrollbar { width:4px; }
+.chat-messages::-webkit-scrollbar-thumb { background:var(--gris-borde); border-radius:2px; }
+
+.msg { display:flex; gap:10px; max-width:85%; animation:msgIn .3s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.msg-muti { align-self:flex-start; }
+.msg-user { align-self:flex-end; flex-direction:row-reverse; }
+.msg-avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; margin-top:2px; }
+.msg-muti .msg-avatar { background:linear-gradient(135deg,var(--dorado),var(--dorado-oscuro)); }
+.msg-user .msg-avatar { background:linear-gradient(135deg,var(--verde),var(--verde-oscuro)); }
+.msg-bubble { padding:12px 16px; border-radius:18px; font-size:.92rem; line-height:1.5; }
+.msg-muti .msg-bubble { background:var(--azul-claro); color:var(--texto); border-bottom-left-radius:4px; }
+.msg-user .msg-bubble { background:var(--verde); color:#fff; border-bottom-right-radius:4px; }
+.msg-typing .msg-bubble { display:flex; gap:5px; align-items:center; padding:14px 18px; }
+.dot { width:7px; height:7px; background:var(--azul); border-radius:50%; animation:typing 1.4s infinite; }
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes typing { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+.chat-input-area { padding:16px 20px; background:#fff; border-top:2px solid var(--gris-borde); flex-shrink:0; }
+.chat-input-row { display:flex; gap:10px; align-items:flex-end; }
+.chat-input { flex:1; padding:12px 16px; border:2px solid var(--gris-borde); border-radius:20px; font-family:'Nunito',sans-serif; font-size:.92rem; resize:none; outline:none; max-height:100px; min-height:44px; transition:border-color .2s; }
+.chat-input:focus { border-color:var(--azul); }
+.send-btn { width:44px; height:44px; background:linear-gradient(135deg,var(--azul),var(--azul-oscuro)); border:none; border-radius:50%; color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; box-shadow:0 3px 10px rgba(91,184,232,.4); }
+.send-btn:hover { transform:scale(1.05); }
+.send-btn:disabled { opacity:.5; cursor:not-allowed; }
+.finalizar-btn { width:100%; padding:10px; margin-top:10px; background:linear-gradient(135deg,var(--verde),var(--verde-oscuro)); border:none; border-radius:14px; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:.9rem; color:#fff; cursor:pointer; transition:all .2s; }
+.finalizar-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(125,217,122,.4); }
+.msg-count { font-size:.75rem; color:var(--texto-suave); text-align:center; margin-bottom:6px; }
+
+/* ══════════════════════════════
+   PANTALLA RECOMPENSA
+══════════════════════════════ */
+#screen-recompensa {
+  background:linear-gradient(135deg,var(--azul-claro) 0%,#fff 50%,var(--verde-claro) 100%);
+  align-items:center; justify-content:center; padding:20px;
+}
+.recompensa-card { background:#fff; border-radius:var(--radio-grande); padding:40px 32px; max-width:480px; width:100%; box-shadow:var(--sombra-hover); text-align:center; border:3px solid var(--dorado); position:relative; overflow:hidden; }
+.recompensa-card::before { content:''; position:absolute; top:0;left:0;right:0; height:6px; background:linear-gradient(90deg,var(--dorado),var(--dorado-oscuro),var(--dorado)); }
+.ficha-animada { width:140px; height:140px; margin:0 auto 20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:64px; animation:ganaFicha .6s ease-out, shimmer 2s .6s ease-in-out infinite; box-shadow:0 0 40px rgba(245,200,66,.5); }
+@keyframes ganaFicha { from{transform:scale(0) rotate(-180deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
+@keyframes shimmer { 0%,100%{box-shadow:0 0 40px rgba(245,200,66,.4)} 50%{box-shadow:0 0 60px rgba(245,200,66,.7)} }
+.recompensa-card h2 { font-family:'Baloo 2',sans-serif; font-size:1.6rem; font-weight:800; color:var(--texto); margin-bottom:8px; }
+.recompensa-logro { background:var(--azul-claro); border-radius:14px; padding:16px; margin:16px 0; font-size:.92rem; color:var(--texto); line-height:1.6; text-align:left; border-left:4px solid var(--azul); }
+.recompensa-logro strong { color:var(--azul-oscuro); }
+.stars-ganadas { display:flex; align-items:center; justify-content:center; gap:8px; font-family:'Baloo 2',sans-serif; font-size:1.1rem; font-weight:800; color:var(--dorado-oscuro); margin-bottom:20px; }
+.btn-continuar { width:100%; padding:16px; background:linear-gradient(135deg,var(--verde),var(--verde-oscuro)); color:#fff; border:none; border-radius:14px; font-family:'Baloo 2',sans-serif; font-size:1.05rem; font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 4px 14px rgba(125,217,122,.4); margin-bottom:10px; }
+.btn-continuar:hover { transform:translateY(-2px); }
+.btn-album { width:100%; padding:12px; background:linear-gradient(135deg,var(--dorado),var(--dorado-oscuro)); color:#fff; border:none; border-radius:14px; font-family:'Baloo 2',sans-serif; font-size:.95rem; font-weight:700; cursor:pointer; transition:all .2s; }
+.btn-album:hover { transform:translateY(-2px); }
+
+/* ══════════════════════════════
+   ÁLBUM
+══════════════════════════════ */
+#screen-album { background:var(--gris-suave); }
+.album-header { background:linear-gradient(135deg,var(--dorado),var(--dorado-oscuro)); padding:20px; color:#fff; }
+.album-header h2 { font-family:'Baloo 2',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:4px; }
+.album-progreso { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.progreso-total { flex:1; height:10px; background:rgba(255,255,255,.3); border-radius:5px; overflow:hidden; }
+.progreso-fill { height:100%; background:#fff; border-radius:5px; transition:width .8s ease; }
+.progreso-label { font-size:.85rem; font-weight:800; white-space:nowrap; }
+.album-content { padding:20px; max-width:960px; margin:0 auto; }
+.album-seccion { margin-bottom:28px; }
+.album-seccion-title { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1rem; color:var(--texto); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.album-seccion-title.sexto-title { color:var(--sexto-purpura); font-family:'Playfair Display',serif; }
+.fichas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px; }
+.ficha { background:#fff; border-radius:16px; padding:16px 12px; text-align:center; box-shadow:var(--sombra); transition:all .25s; border:2px solid transparent; position:relative; }
+.ficha.desbloqueada { border-color:var(--dorado); background:linear-gradient(135deg,#FFFEF5,#fff); }
+.ficha.desbloqueada:hover { transform:translateY(-3px); box-shadow:var(--sombra-hover); }
+.ficha.bloqueada { opacity:.5; filter:grayscale(.6); }
+.ficha-icono { font-size:32px; margin-bottom:6px; }
+.ficha-nombre { font-size:.72rem; font-weight:700; color:var(--texto); line-height:1.3; }
+.ficha.bloqueada .ficha-nombre { color:var(--texto-suave); }
+.ficha-lock { position:absolute; top:6px; right:6px; font-size:12px; }
+.ficha-oro { position:absolute; top:6px; right:6px; font-size:14px; }
+.ficha.sexto-ficha.desbloqueada { border-color:var(--sexto-purpura); background:linear-gradient(135deg,#F3EEFF,#fff); }
+
+/* ── CONFETTI ── */
+.confetti-container { position:fixed; top:0;left:0;right:0;bottom:0; pointer-events:none; z-index:1000; overflow:hidden; }
+.confetti-piece { position:absolute; width:10px; height:10px; border-radius:2px; animation:confettiFall linear forwards; }
+@keyframes confettiFall { from{transform:translateY(-20px) rotate(0deg);opacity:1} to{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+@media(max-width:768px) {
+  #screen-chat { flex-direction:column; height:auto; min-height:100vh; overflow:auto; }
+  .chat-left { width:100%; height:auto; border-right:none; border-bottom:2px solid var(--gris-borde); max-height:35vh; overflow-y:auto; }
+  .chat-right { width:100%; height:65vh; position:sticky; bottom:0; }
+  .categorias-grid { grid-template-columns:1fr 1fr; }
+  .sexto-lecturas-grid { grid-template-columns:1fr; }
+  .grado-grid { grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Pantalla API eliminada — la clave vive en el servidor -->
+
+<!-- ════════ PANTALLA REGISTRO ════════ -->
+<div id="screen-registro" class="screen active">
+  <div class="registro-card">
+    <div class="registro-header">
+      <div class="bee">🐝</div>
+      <h2>¡Hola! Soy Muti</h2>
+      <p>Tu compañera de lectura. ¡Vamos a pensar juntos!</p>
+    </div>
+    <div class="input-group">
+      <label>¿Cómo te llamas?</label>
+      <input class="input-field" type="text" id="nombre-input" placeholder="Escribe tu nombre aquí...">
+      <div class="error-msg" id="error-nombre">Por favor escribe tu nombre 😊</div>
+    </div>
+    <div class="input-group">
+      <label>¿En qué grado estás?</label>
+      <div class="grado-grid">
+        <button class="grado-btn" onclick="selGrado(1)">1° Grado</button>
+        <button class="grado-btn" onclick="selGrado(2)">2° Grado</button>
+        <button class="grado-btn" onclick="selGrado(3)">3° Grado</button>
+        <button class="grado-btn" onclick="selGrado(4)">4° Grado</button>
+        <button class="grado-btn" onclick="selGrado(5)">5° Grado</button>
+        <button class="grado-btn sexto" onclick="selGrado(6)">6° Grado ✨</button>
+      </div>
+      <div class="error-msg" id="error-grado">Por favor selecciona tu grado 📚</div>
+      <div class="sexto-hint" id="sexto-hint">🎓 ¡6to grado tiene contenido literario especial exclusivo para ti!</div>
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn-primary" onclick="comenzar()">🚀 ¡Comenzar Aventura!</button>
+  </div>
+</div>
+
+<!-- ════════ PANTALLA HOME ════════ -->
+<div id="screen-home" class="screen">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="top-bar-logo">🐝</div>
+      <div>
+        <div class="top-bar-name" id="top-name">Explorador</div>
+        <div class="top-bar-grade" id="top-grade">1° Grado</div>
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <div class="stars-badge">⭐ <span id="stars-count">0</span></div>
+      <button class="album-btn" onclick="irAlbum()">📚 Mi Álbum</button>
+    </div>
+  </div>
+  <div class="home-content">
+    <div class="home-welcome">
+      <h2 id="welcome-text">¡Hola, Explorador! 🐝</h2>
+      <p>Elige un mundo de lectura y conversa con Muti para descubrir grandes ideas.</p>
+    </div>
+    <!-- Banner especial 6to — solo visible si grado == 6 -->
+    <div class="banner-sexto" id="banner-sexto" style="display:none" onclick="irSexto()">
+      <div class="banner-sexto-icon">📖</div>
+      <div>
+        <h3>Sección Literaria — 6to Grado</h3>
+        <p>Literatura Clásica · Literatura Latinoamericana · Poesía Latinoamericana</p>
+        <span class="banner-sexto-badge">✨ Exclusivo para 6to Grado</span>
+      </div>
+    </div>
+    <div class="section-title">🌍 Mundos de Lectura</div>
+    <div class="categorias-grid">
+      <div class="categoria-card cat-ciencia" onclick="irCategoria('ciencia')">
+        <div class="cat-emoji">🔬</div><div class="cat-nombre">Ciencia</div>
+        <div class="cat-desc">Descubre cómo funciona el mundo que nos rodea</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill ciencia-fill" id="prog-ciencia" style="width:0%"></div></div><div class="cat-count" id="cnt-ciencia">0/3</div></div>
+      </div>
+      <div class="categoria-card cat-animales" onclick="irCategoria('animales')">
+        <div class="cat-emoji">🦋</div><div class="cat-nombre">Animales</div>
+        <div class="cat-desc">Explora los increíbles secretos del reino animal</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill animales-fill" id="prog-animales" style="width:0%"></div></div><div class="cat-count" id="cnt-animales">0/3</div></div>
+      </div>
+      <div class="categoria-card cat-emociones" onclick="irCategoria('emociones')">
+        <div class="cat-emoji">💝</div><div class="cat-nombre">Emociones</div>
+        <div class="cat-desc">Entiende tus sentimientos y los de los demás</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill emociones-fill" id="prog-emociones" style="width:0%"></div></div><div class="cat-count" id="cnt-emociones">0/3</div></div>
+      </div>
+      <div class="categoria-card cat-arte" onclick="irCategoria('arte')">
+        <div class="cat-emoji">🎨</div><div class="cat-nombre">Arte</div>
+        <div class="cat-desc">Viaja a través de la historia del arte y la creatividad</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill arte-fill" id="prog-arte" style="width:0%"></div></div><div class="cat-count" id="cnt-arte">0/3</div></div>
+      </div>
+      <div class="categoria-card cat-superheroes" onclick="irCategoria('superheroes')">
+        <div class="cat-emoji">⚡</div><div class="cat-nombre">Superhéroes</div>
+        <div class="cat-desc">Aprende sobre héroes reales y sus grandes valores</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill superheroes-fill" id="prog-superheroes" style="width:0%"></div></div><div class="cat-count" id="cnt-superheroes">0/3</div></div>
+      </div>
+      <div class="categoria-card cat-historia" onclick="irCategoria('historia')">
+        <div class="cat-emoji">🏛️</div><div class="cat-nombre">Historia</div>
+        <div class="cat-desc">Viaja al pasado y conoce los grandes momentos de la humanidad</div>
+        <div class="cat-progress"><div class="progress-bar"><div class="progress-fill historia-fill" id="prog-historia" style="width:0%"></div></div><div class="cat-count" id="cnt-historia">0/3</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PANTALLA SECCIÓN 6TO ════════ -->
+<div id="screen-sexto" class="screen">
+  <div class="sexto-header">
+    <div class="sexto-header-top">
+      <div>
+        <h2>📖 Sección Literaria — 6to Grado</h2>
+        <p>Explora la gran literatura con Muti como tu guía socrática</p>
+      </div>
+      <button class="back-btn" style="color:rgba(255,255,255,0.8)" onclick="irHome()">← Inicio</button>
+    </div>
+    <div class="sexto-cats-tabs">
+      <button class="sexto-tab active" onclick="cambiarTabSexto('clasica',this)">🎭 Literatura Clásica</button>
+      <button class="sexto-tab" onclick="cambiarTabSexto('latinoam',this)">🌿 Literatura Latinoamericana</button>
+      <button class="sexto-tab" onclick="cambiarTabSexto('poesia',this)">🌸 Poesía Latinoamericana</button>
+    </div>
+  </div>
+  <div class="sexto-content">
+
+    <!-- CLÁSICA -->
+    <div class="sexto-cat-panel active" id="panel-clasica">
+      <div class="sexto-cat-header">
+        <h3>🎭 Literatura Clásica Universal</h3>
+        <p>Los grandes relatos que han sobrevivido siglos porque hablan de lo más humano: el amor, la venganza, el miedo y el coraje.</p>
+      </div>
+      <div class="sexto-lecturas-grid" id="grid-clasica"></div>
+    </div>
+
+    <!-- LATINOAMERICANA -->
+    <div class="sexto-cat-panel" id="panel-latinoam">
+      <div class="sexto-cat-header">
+        <h3>🌿 Literatura Latinoamericana</h3>
+        <p>Voces de nuestra América que mezclan realidad y magia, memoria y sueño, lo cotidiano y lo extraordinario.</p>
+      </div>
+      <div class="sexto-lecturas-grid" id="grid-latinoam"></div>
+    </div>
+
+    <!-- POESÍA -->
+    <div class="sexto-cat-panel" id="panel-poesia">
+      <div class="sexto-cat-header">
+        <h3>🌸 Poesía Latinoamericana</h3>
+        <p>Palabras que suenan como música y pintan imágenes con el idioma. Los poetas más importantes de nuestra lengua.</p>
+      </div>
+      <div class="sexto-lecturas-grid" id="grid-poesia"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ PANTALLA LECTURAS (1-5) ════════ -->
+<div id="screen-lecturas" class="screen">
+  <div class="lecturas-header">
+    <button class="back-btn" id="lecturas-back-btn" onclick="irHome()">← Regresar</button>
+    <div class="lecturas-title" id="cat-titulo">Ciencia 🔬</div>
+  </div>
+  <div class="lecturas-grid" id="lecturas-grid"></div>
+</div>
+
+<!-- ════════ PANTALLA CHAT ════════ -->
+<div id="screen-chat" class="screen">
+  <div class="chat-left">
+    <div class="chat-left-header">
+      <button class="back-btn" id="chat-back-btn" onclick="chatVolver()">← Volver</button>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:var(--texto);margin-top:6px" id="chat-lectura-titulo">Lectura</div>
+    </div>
+    <div class="lectura-contenido" id="lectura-contenido-text"></div>
+  </div>
+  <div class="chat-right">
+    <div class="chat-header">
+      <div class="muti-avatar">🐝</div>
+      <div class="muti-info">
+        <h4>Muti <span class="muti-status"></span></h4>
+        <p id="muti-subtitle">La abeja socrática • Modo Mayéutica</p>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-area">
+      <div class="msg-count" id="msg-count">Mínimo 3 respuestas para desbloquear la ficha</div>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chat-input" placeholder="Escribe tu respuesta aquí..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarMsg()}"
+          oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="enviarMsg()">➤</button>
+      </div>
+      <button class="finalizar-btn" id="finalizar-btn" onclick="finalizarChat()" style="display:none">✅ Finalizar y obtener mi ficha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RECOMPENSA ════════ -->
+<div id="screen-recompensa" class="screen">
+  <div class="recompensa-card">
+    <div class="ficha-animada" id="ficha-animada">⭐</div>
+    <h2>¡Bzzz! ¡Lo lograste! 🎉</h2>
+    <div class="recompensa-logro" id="recompensa-logro">Cargando resumen...</div>
+    <div class="stars-ganadas">⭐ +1 Estrella ganada</div>
+    <button class="btn-continuar" onclick="continuarExplorando()">🚀 ¡Continuar Explorando!</button>
+    <button class="btn-album" onclick="irAlbum()">📚 Ver mi Álbum</button>
+  </div>
+</div>
+
+<!-- ════════ ÁLBUM ════════ -->
+<div id="screen-album" class="screen">
+  <div class="album-header">
+    <button class="back-btn" style="color:#fff" onclick="irHome()">← Regresar</button>
+    <h2>⭐ Mi Colección de Sabiduría</h2>
+    <div class="album-progreso">
+      <div class="progreso-total"><div class="progreso-fill" id="album-prog-fill" style="width:0%"></div></div>
+      <div class="progreso-label" id="album-prog-label">0 / 27 fichas</div>
+    </div>
+  </div>
+  <div class="album-content" id="album-content"></div>
+</div>
+
+<div class="confetti-container" id="confetti-container"></div>
+
+<script>
+// ══════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════
+let estado = {
+  apiKey: '',
+  nombre: '',
+  grado: 0,
+  estrellas: 0,
+  fichasDesbloqueadas: [],
+  categoriaActual: '',
+  esSeccionSexto: false,
+  lecturaActual: null,
+  historialChat: [],
+  mensajesEnviados: 0,
+  pantallaAnterior: 'screen-home'
+};
+
+// ══════════════════════════════════════
+// LECTURAS 1–5 (del PDF — 18 lecturas)
+// ══════════════════════════════════════
+const LECTURAS = {
+  ciencia: [
+    {
+      id:'c1', titulo:'El viaje de la gota cristalina', emoji:'💧', fichaEmoji:'🧪',
+      desc:'Cristal, una gota de agua, nos muestra los estados físicos del ciclo del agua',
+      texto:`<h3>💧 El viaje de la gota cristalina</h3>
+      <p>Cristal era una pequeña gota de agua que descansaba en un lago azul. Un día, el sol brilló con tanta fuerza que Cristal se sintió muy ligera y comenzó a subir hacia el cielo convertida en <strong>vapor</strong>.</p>
+      <p>Allí arriba, se encontró con millones de amigas y juntas formaron una nube blanca y esponjosa. Cuando el aire se puso frío, las gotas se apretaron tanto que la nube se volvió gris y pesada.</p>
+      <p>Cristal volvió a caer a la tierra en forma de <strong>lluvia</strong>, regando un campo de girasoles antes de regresar, a través de un río, a su amado lago.</p>`
+    },
+    {
+      id:'c2', titulo:'Las plantas: fábricas de aire', emoji:'🌱', fichaEmoji:'🌿',
+      desc:'Descubre cómo las plantas fabrican su alimento y nos dan el aire que respiramos',
+      texto:`<h3>🌱 Las plantas: fábricas de aire</h3>
+      <p>A diferencia de los animales, las plantas no buscan comida; la <strong>fabrican</strong>. Usan sus raíces para absorber agua y minerales del suelo. Sus hojas, que funcionan como paneles solares, captan la luz del sol.</p>
+      <p>Con esa energía, el agua y un gas del aire llamado <strong>dióxido de carbono</strong>, fabrican su alimento (azúcar) y liberan <strong>oxígeno</strong>. Este proceso se llama fotosíntesis.</p>
+      <p>Sin este trabajo silencioso de las plantas, los seres humanos no tendríamos aire puro para respirar ni alimentos para vivir.</p>`
+    },
+    {
+      id:'c3', titulo:'El sistema solar en un patio', emoji:'🪐', fichaEmoji:'🌙',
+      desc:'Una comparación ingeniosa para entender las distancias del sistema solar',
+      texto:`<h3>🪐 El sistema solar en un patio</h3>
+      <p>Imaginen que el Sol es una enorme naranja situada en el centro de un patio. Los planetas son como pequeñas canicas y granos de arena que giran a su alrededor.</p>
+      <p><strong>Mercurio</strong> es el más cercano y rápido, mientras que <strong>Neptuno</strong> está tan lejos que es una canica helada en la oscuridad. La <strong>Tierra</strong> es la tercera canica, la única que tiene el equilibrio perfecto de calor y agua para la vida.</p>
+      <p>Todos se mantienen en su sitio gracias a la <strong>gravedad</strong>, una fuerza invisible que actúa como un hilo que los mantiene unidos al Sol.</p>`
+    }
+  ],
+  animales: [
+    {
+      id:'a1', titulo:'El camuflaje del pulpo', emoji:'🐙', fichaEmoji:'🌊',
+      desc:'El ninja invisible del mar y sus asombrosos poderes de disfraz',
+      texto:`<h3>🐙 El camuflaje del pulpo</h3>
+      <p>En el fondo del océano vive el pulpo, un maestro del disfraz. Su piel tiene células especiales que le permiten cambiar de color y textura en <strong>menos de un segundo</strong>.</p>
+      <p>Si está sobre una roca llena de algas, su cuerpo se vuelve rugoso y verde. Si nada sobre la arena blanca, se vuelve liso y pálido. No lo hace por vanidad, sino para <strong>esconderse de tiburones</strong> hambrientos y para <strong>sorprender a los cangrejos</strong> que desea cazar.</p>
+      <p>Es el ninja invisible del mar.</p>`
+    },
+    {
+      id:'a2', titulo:'El lenguaje de las abejas', emoji:'🐝', fichaEmoji:'🍯',
+      desc:'Cómo se comunican las abejas explorando con un baile especial',
+      texto:`<h3>🐝 El lenguaje de las abejas</h3>
+      <p>Cuando una abeja exploradora encuentra un campo lleno de flores con néctar, regresa a la colmena para avisar a sus compañeras. Pero no usa palabras; usa un <strong>baile</strong>.</p>
+      <p>Si vuela en <strong>círculos</strong>, las flores están cerca. Si baila haciendo un "<strong>ocho</strong>" y menea el abdomen, indica que las flores están lejos y señala la dirección usando la posición del sol.</p>
+      <p>Así, miles de abejas pueden llegar al lugar exacto para recolectar el alimento que luego convertirán en deliciosa miel.</p>`
+    },
+    {
+      id:'a3', titulo:'La gran migración de la Mariposa Monarca', emoji:'🦋', fichaEmoji:'🍂',
+      desc:'El viaje imposible de millones de mariposas de Canadá a México',
+      texto:`<h3>🦋 La gran migración de la Mariposa Monarca</h3>
+      <p>Cada año, millones de mariposas monarcas realizan un viaje asombroso desde <strong>Canadá hasta México</strong>. Son tan ligeras como una pluma, pero vuelan miles de kilómetros para escapar del frío invierno del norte.</p>
+      <p>Se guían por la <strong>luz del sol</strong> y el <strong>magnetismo de la tierra</strong>. Al llegar a los bosques de pino en México, se agrupan en los troncos de los árboles para mantenerse calientes.</p>
+      <p>Lo más increíble es que las mariposas que regresan no son las mismas que salieron, sino sus <strong>bisnietas</strong>.</p>`
+    }
+  ],
+  emociones: [
+    {
+      id:'e1', titulo:'El nudo en la garganta de Mateo', emoji:'🎤', fichaEmoji:'💪',
+      desc:'Cómo Mateo aprendió a transformar el miedo en confianza',
+      texto:`<h3>🎤 El nudo en la garganta de Mateo</h3>
+      <p>Mateo tenía que dar un discurso frente a toda la escuela. Al subir al escenario, sintió que sus manos temblaban y un <strong>nudo apretado</strong> apareció en su garganta. El miedo le decía: "¡Corre y escóndete!".</p>
+      <p>Pero entonces, vio a su maestra sonreír y a su mejor amigo levantar el pulgar. Mateo cerró los ojos, <strong>respiró profundo</strong> y dejó que el aire desatara el nudo.</p>
+      <p>Cuando empezó a hablar, el miedo se hizo pequeño y la <strong>confianza</strong> ocupó su lugar.</p>`
+    },
+    {
+      id:'e2', titulo:'El color de la envidia', emoji:'💚', fichaEmoji:'🌈',
+      desc:'Sofía descubre que la envidia puede transformarse en inspiración',
+      texto:`<h3>💚 El color de la envidia</h3>
+      <p>Sofía siempre había querido la caja de lápices de 64 colores que tenía Lucía. Cuando Lucía ganó el concurso de dibujo, Sofía sintió una <strong>punzada amarga</strong> en el pecho. No quería felicitarla; quería que a Lucía se le perdieran los lápices.</p>
+      <p>Su abuelo, al ver su cara, le dijo: <em>"La envidia es como beber un veneno esperando que al otro le duela"</em>. Sofía entendió que el talento de Lucía no le quitaba el suyo, y decidió <strong>practicar más</strong> en lugar de mirar lo ajeno.</p>`
+    },
+    {
+      id:'e3', titulo:'La caja de la calma de Elena', emoji:'🌋', fichaEmoji:'🧘',
+      desc:'Elena aprende a controlar su enojo con herramientas creativas',
+      texto:`<h3>🌋 La caja de la calma de Elena</h3>
+      <p>A veces, el enojo de Elena era como un <strong>volcán en erupción</strong>. Gritaba y tiraba sus juguetes. Un día, su mamá le propuso crear la <strong>"caja de la calma"</strong>.</p>
+      <p>Adentro pusieron una pelota de goma para apretar, una foto de su perro y una botella con purpurina que bajaba despacio.</p>
+      <p>La próxima vez que el volcán quiso explotar, Elena fue a su caja. Al ver la purpurina caer lentamente, sus latidos se normalizaron y el volcán se apagó sin quemar a nadie.</p>`
+    }
+  ],
+  arte: [
+    {
+      id:'ar1', titulo:'Las cuevas de los primeros artistas', emoji:'🪨', fichaEmoji:'🎭',
+      desc:'El arte más antiguo del mundo, pintado en oscuras cavernas prehistóricas',
+      texto:`<h3>🪨 Las cuevas de los primeros artistas</h3>
+      <p>Hace miles de años, antes de que existieran los museos, los seres humanos ya pintaban. Usaban las <strong>paredes de cuevas oscuras</strong> como lienzos. No tenían pinceles, así que usaban sus dedos o soplaban pintura a través de <strong>huesos huecos</strong>.</p>
+      <p>Los colores los sacaban de la <strong>tierra roja</strong> y del <strong>carbón de las fogatas</strong>. Pintaban bisontes, caballos y sus propias manos.</p>
+      <p>No lo hacían solo por decorar, sino para contar historias de sus cacerías y <strong>pedir protección a la naturaleza</strong>.</p>`
+    },
+    {
+      id:'ar2', titulo:'El secreto de la escultura', emoji:'🗿', fichaEmoji:'⚱️',
+      desc:'Miguel Ángel y la filosofía de liberar la figura que ya existe en la piedra',
+      texto:`<h3>🗿 El secreto de la escultura</h3>
+      <p>Miguel Ángel decía que dentro de cada bloque de mármol frío vivía una figura <strong>esperando ser liberada</strong>. Su trabajo no era "hacer" la estatua, sino quitar con el cincel y el martillo la piedra que sobraba.</p>
+      <p>Golpe a golpe, el mármol se volvía suave como la piel y los músculos parecían cobrar vida. El arte de la escultura requiere <strong>paciencia infinita</strong>, porque un golpe demasiado fuerte puede romper el brazo de un ángel o la nariz de un rey para siempre.</p>`
+    },
+    {
+      id:'ar3', titulo:'La orquesta de los colores', emoji:'🎨', fichaEmoji:'🌅',
+      desc:'Pintar es como dirigir una orquesta donde los colores son los instrumentos',
+      texto:`<h3>🎨 La orquesta de los colores</h3>
+      <p>Pintar es como dirigir una orquesta, pero con los ojos. Los <strong>colores primarios</strong> (rojo, azul y amarillo) son los instrumentos principales. Si los mezclas, creas nuevos sonidos: el azul y el amarillo forman el verde del bosque; el rojo y el azul, el violeta del atardecer.</p>
+      <p>Un pintor usa <strong>colores cálidos</strong> para dar alegría y <strong>colores fríos</strong> para dar paz. Cuando todos los colores están en equilibrio, la pintura "suena" bien y nos hace sentir emociones sin decir una sola palabra.</p>`
+    }
+  ],
+  superheroes: [
+    {
+      id:'s1', titulo:'El escudo de la honestidad', emoji:'🦸', fichaEmoji:'🌟',
+      desc:'Capitán Verdad demuestra que la honestidad es más poderosa que la fuerza',
+      texto:`<h3>🦸 El escudo de la honestidad</h3>
+      <p>Capitán Verdad no tenía rayos láser ni podía volar. Su superpoder era que <strong>nunca, bajo ninguna circunstancia, decía una mentira</strong>.</p>
+      <p>Un día, el villano Sombrío lo atrapó y le prometió liberarlo si culpaba a un inocente de un robo. Capitán Verdad prefirió quedarse encerrado antes que manchar su honor.</p>
+      <p>Su honestidad era tan fuerte que terminó <strong>inspirando a los guardias de Sombrío</strong> a liberarlo. Al final, demostró que la verdad es un escudo que nadie puede romper.</p>`
+    },
+    {
+      id:'s2', titulo:'Héroes sin capa: Los bomberos', emoji:'🚒', fichaEmoji:'🪖',
+      desc:'Los superhéroes reales que corren hacia el fuego cuando todos huyen',
+      texto:`<h3>🚒 Héroes sin capa: Los bomberos</h3>
+      <p>En la ciudad viven superhéroes que no salen en los cómics. Llevan trajes pesados de color amarillo y cascos brillantes. Cuando todos corren para <strong>alejarse del fuego</strong>, ellos corren <strong>hacia él</strong>.</p>
+      <p>Su superpoder es la valentía y el trabajo en equipo. Usan mangueras gigantes y escaleras que llegan al cielo para salvar a personas y mascotas.</p>
+      <p>No esperan aplausos, solo saber que todos están a salvo. Su mayor recompensa es el <strong>silencio de una emergencia controlada</strong>.</p>`
+    },
+    {
+      id:'s3', titulo:'El equipo de la liga escolar', emoji:'🤝', fichaEmoji:'🏆',
+      desc:'Súper Veloz y Súper Fuerte aprenden que juntos son invencibles',
+      texto:`<h3>🤝 El equipo de la liga escolar</h3>
+      <p>Súper Veloz podía correr como el viento, pero no tenía fuerza para mover una roca. Súper Fuerte podía levantar un camión, pero era muy lento.</p>
+      <p>Cuando un meteorito cayó en el patio del recreo, ninguno pudo moverlo solo. Solo cuando Súper Veloz guio a Súper Fuerte y ambos empujaron al mismo tiempo, lograron limpiar el patio.</p>
+      <p>Comprendieron que un equipo es como una mano: los dedos son diferentes, pero solo juntos pueden <strong>cerrar el puño para trabajar</strong>.</p>`
+    }
+  ],
+  historia: [
+    {
+      id:'h1', titulo:'El nacimiento de las letras', emoji:'📜', fichaEmoji:'✍️',
+      desc:'Cómo marcas en arcilla se convirtieron en el sistema de escritura que usamos hoy',
+      texto:`<h3>📜 El nacimiento de las letras</h3>
+      <p>Hubo un tiempo en que la gente no sabía escribir. Si querían recordar cuántas ovejas tenían, hacían <strong>marcas en tablitas de arcilla</strong>. Con el paso de los siglos, esas marcas se convirtieron en dibujos y luego en letras.</p>
+      <p>En el antiguo Egipto, usaban <strong>jeroglíficos</strong>, que eran dibujos de animales y plantas que representaban sonidos.</p>
+      <p>Gracias a la invención de la escritura, hoy podemos leer los pensamientos de personas que vivieron hace <strong>cinco mil años</strong>, como si estuviéramos hablando con ellas.</p>`
+    },
+    {
+      id:'h2', titulo:'El primer maratón', emoji:'🏃', fichaEmoji:'🥇',
+      desc:'La carrera heroica de Filípides que dio nombre a los 42 kilómetros más famosos del mundo',
+      texto:`<h3>🏃 El primer maratón</h3>
+      <p>Hace mucho tiempo, en Grecia, hubo una gran batalla en un lugar llamado <strong>Maratón</strong>. Cuando los griegos ganaron, un soldado llamado <strong>Filípides</strong> corrió sin descansar hasta la ciudad de Atenas.</p>
+      <p>Corrió por caminos de piedra y bajo el sol ardiente para dar la gran noticia: <em>"¡Hemos vencido!"</em>. Al llegar, dio su mensaje y cayó rendido del cansancio.</p>
+      <p>En su honor, hoy en día se celebran carreras de <strong>42 kilómetros</strong> que llevan el nombre de aquel lugar histórico.</p>`
+    },
+    {
+      id:'h3', titulo:'El barco que cambió el mapa', emoji:'⛵', fichaEmoji:'🗺️',
+      desc:'Cristóbal Colón y el viaje que descubrió un continente entero que no estaba en los mapas',
+      texto:`<h3>⛵ El barco que cambió el mapa</h3>
+      <p>Hace quinientos años, la gente pensaba que el mar se acababa en un <strong>abismo lleno de monstruos</strong>. Pero un hombre llamado Cristóbal Colón creía que la Tierra era redonda como una naranja.</p>
+      <p>Salió con tres barcos de madera (<em>La Pinta, La Niña y la Santa María</em>) buscando una nueva ruta. Después de muchos días viendo solo agua, un marinero gritó: <strong>"¡Tierra!"</strong>.</p>
+      <p>No llegaron a donde pensaban, pero encontraron un <strong>continente entero</strong> que no estaba en sus mapas. Ese día, el mundo se hizo mucho más grande.</p>`
+    }
+  ]
+};
+
+// ══════════════════════════════════════
+// LECTURAS 6TO GRADO
+// ══════════════════════════════════════
+const LECTURAS_SEXTO = {
+  clasica: [
+    {
+      id:'lc1', titulo:'Hamlet: La duda del príncipe', autor:'William Shakespeare (1603)', emoji:'🎭',
+      fichaEmoji:'👑', tag:'tag-clasica', bannerClass:'clasica-banner',
+      desc:'El príncipe de Dinamarca descubre que su padre fue asesinado y debe decidir qué hacer',
+      texto:`<h3>🎭 Hamlet: La duda del príncipe</h3>
+      <p>En el reino de Dinamarca, el joven príncipe <strong>Hamlet</strong> recibe una visita que cambia todo: el fantasma de su padre le revela que fue <strong>asesinado por su propio hermano Claudio</strong>, quien ahora ocupa el trono y se ha casado con la madre de Hamlet.</p>
+      <p>Hamlet queda paralizado entre la rabia y la duda. ¿Puede confiar en el fantasma? ¿Tiene derecho a vengarse? Mientras finge estar loco para investigar la verdad, todo a su alrededor se desmorona: la mujer que ama lo rechaza, sus amigos lo traicionan y su propia madre no entiende su dolor.</p>
+      <p>La pregunta que define a Hamlet y a todo ser humano resuena a través de los siglos: <em>"Ser o no ser: esa es la cuestión"</em>. ¿Es mejor soportar las injusticias de la vida o actuar con riesgo de empeorar todo?</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Hamlet y Shakespeare',
+        curiosidades: ['Shakespeare escribió Hamlet hacia 1600', 'Es la obra más representada del mundo', '"Ser o no ser" es la frase más citada de la literatura universal', 'Hamlet tiene más de 1.500 líneas de diálogo — el personaje más extenso de Shakespeare'],
+        fragmento: `"Ser o no ser: esa es la cuestión. ¿Es más noble para el espíritu soportar los golpes y dardos de la ultrajante Fortuna, o tomar las armas contra un mar de calamidades y, enfrentándolas, acabar con ellas?"`,
+        contexto: 'Esta obra toca temas que siguen vigentes: la justicia, la traición familiar, la salud mental y el dilema entre actuar o no. Shakespeare la escribió en el Globo Theatre de Londres.'
+      }
+    },
+    {
+      id:'lc2', titulo:'Romeo y Julieta: El amor imposible', autor:'William Shakespeare (1597)', emoji:'🌹',
+      fichaEmoji:'💔', tag:'tag-clasica', bannerClass:'clasica-banner',
+      desc:'Dos jóvenes de familias enemigas se enamoran en Verona con consecuencias trágicas',
+      texto:`<h3>🌹 Romeo y Julieta: El amor imposible</h3>
+      <p>En la ciudad de Verona, dos familias nobles se odian desde hace generaciones: los <strong>Montesco</strong> y los <strong>Capuleto</strong>. Sus pellejeos llenan de sangre las calles.</p>
+      <p>En una fiesta de los Capuleto, el joven Romeo ve por primera vez a Julieta y queda fulminado por el amor. Ella siente lo mismo. En pocas horas se prometen matrimonio en secreto, aunque saben que sus familias jamás lo aprobarían.</p>
+      <p>Pero la tragedia los persigue: un duelo fatal, un malentendido con una carta que llega tarde y dos jóvenes que prefieren la muerte al mundo sin el otro. Su historia demuestra que el odio heredado puede destruir lo más hermoso.</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Romeo y Julieta',
+        curiosidades: ['Shakespeare la escribió basándose en un poema italiano de 1562', 'Julieta solo tiene 13 años en la obra original', 'La historia sucede en solo 5 días', 'Ha sido adaptada en más de 200 películas y musicales, incluyendo West Side Story'],
+        fragmento: `"¿Qué es un nombre? Lo que llamamos rosa, con cualquier otro nombre olería igual de dulce."`,
+        contexto: 'Verona, la ciudad de la historia, recibe millones de turistas cada año que visitan el "balcón de Julieta". La obra fue revolucionaria porque mostró el amor romántico como algo que vale más que el honor familiar.'
+      }
+    },
+    {
+      id:'lc3', titulo:'Hansel y Gretel: El bosque del miedo', autor:'Hermanos Grimm (1812)', emoji:'🍬',
+      fichaEmoji:'🏠', tag:'tag-clasica', bannerClass:'clasica-banner',
+      desc:'Dos hermanos abandonados en el bosque descubren una casa de dulces con un peligroso secreto',
+      texto:`<h3>🍬 Hansel y Gretel: El bosque del miedo</h3>
+      <p>En tiempos de hambre, un leñador y su malvada esposa deciden llevar a sus hijos <strong>Hansel y Gretel</strong> al bosque profundo y abandonarlos allí. Los niños lo escuchan todo y Hansel, astuto, recoge piedras blancas para marcar el camino de regreso.</p>
+      <p>La segunda vez, los llevan tan lejos que las migajas de pan que Hansel dejó como guía fueron comidas por los pájaros. Perdidos en la oscuridad, los niños encuentran una <strong>casa hecha de dulces y pan</strong> de la que sale un aroma irresistible.</p>
+      <p>Pero la anciana dueña es una <strong>bruja que engorda niños para comérselos</strong>. Captura a Hansel y obliga a Gretel a servir. Sin embargo, subestima a Gretel, quien con valentía y astucia empuja a la bruja al horno y libera a su hermano. El ingenio y el trabajo en equipo los salvan.</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre los Hermanos Grimm',
+        curiosidades: ['Jacob y Wilhelm Grimm eran filólogos alemanes, no inventores de cuentos', 'Recogieron historias populares orales que circulaban en Alemania', 'La primera edición de 1812 era mucho más oscura — la madre era la madre biológica, no madrastra', 'Publicaron más de 200 cuentos: Cenicienta, Blancanieves, Rapunzel y muchos más'],
+        fragmento: `"La casa entera estaba hecha de pan y cubierta de tartas; pero las ventanas eran de azúcar transparente como el cristal."`,
+        contexto: 'Los cuentos de Grimm no eran originalmente para niños — eran relatos adultos sobre miedos reales: el hambre, el abandono y el peligro del mundo. Con el tiempo se suavizaron para el público infantil.'
+      }
+    }
+  ],
+  latinoam: [
+    {
+      id:'ll1', titulo:'El ahogado más hermoso del mundo', autor:'Gabriel García Márquez (1968)', emoji:'🌊',
+      fichaEmoji:'🐚', tag:'tag-latinoam', bannerClass:'latinoam-banner',
+      desc:'Un hombre gigantesco aparece muerto en las playas de un pueblo y lo transforma para siempre',
+      texto:`<h3>🌊 El ahogado más hermoso del mundo</h3>
+      <p>Un martes por la tarde, los niños de un pequeño pueblo de pescadores vieron flotar hacia la orilla una enorme <strong>masa oscura</strong>. Era un hombre muerto, el más grande y bello que hubieran visto jamás.</p>
+      <p>Las mujeres lo limpiaron, le quitaron el barro y el musgo del mar, y descubrieron que era tan hermoso que <strong>ningún nombre del pueblo le hacía justicia</strong>. Le pusieron Esteban. Mientras lo preparaban para el entierro, empezaron a imaginar su vida: qué voz tendría, cómo habría amado, cuánto lugar habría ocupado en las casas.</p>
+      <p>Cuando llegó el momento de devolverlo al mar, el pueblo entero había cambiado. Decidieron que su aldea merecía ser tan bella como Esteban: sembrarían flores en los peñascos, pintarían las casas de colores alegres. Un muerto desconocido les había devuelto las ganas de vivir.</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre García Márquez y el Realismo Mágico',
+        curiosidades: ['García Márquez nació en Aracataca, Colombia (1927-2014)', 'Ganó el Premio Nobel de Literatura en 1982', 'Este cuento es un ejemplo perfecto del Realismo Mágico: lo imposible ocurre con total naturalidad', 'Su novela más famosa es Cien años de soledad (1967)'],
+        fragmento: `"Eran los hombres más escasos de las tierras del Caribe, pero él era tan alto que no le alcanzaban los zapatos, y tan ancho que no le cabía por las puertas."`,
+        contexto: 'El Realismo Mágico es una corriente literaria latinoamericana donde lo maravilloso convive con lo cotidiano sin asombrar a nadie. García Márquez la convirtió en arte universal.'
+      }
+    },
+    {
+      id:'ll2', titulo:'El sur', autor:'Jorge Luis Borges (1953)', emoji:'🗡️',
+      fichaEmoji:'📖', tag:'tag-latinoam', bannerClass:'latinoam-banner',
+      desc:'Un hombre entre la vida y la muerte viaja hacia el Sur en busca de su destino',
+      texto:`<h3>🗡️ El sur (fragmento adaptado)</h3>
+      <p><strong>Juan Dahlmann</strong>, empleado de una biblioteca de Buenos Aires y descendiente de un héroe de las guerras civiles argentinas, sueña con morir de una muerte romántica, no en una cama de hospital. Un accidente lo pone al borde de la muerte.</p>
+      <p>Cuando por fin le dan el alta, Dahlmann decide viajar en tren al Sur, a la estancia familiar que no ha visitado en años. El viaje parece irreal: paisajes que se van vaciando, el tiempo que se vuelve borroso.</p>
+      <p>Al detenerse en un almacén de campo, un gaucho viejo lo observa con respeto. Unos hombres lo provocan. Alguien le lanza un cuchillo. Dahlmann lo levanta, sabiendo que no sabe pelear, pero eligiendo esa muerte abierta bajo el cielo en lugar del hospital. <em>Prefería morir peleando.</em></p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Borges',
+        curiosidades: ['Jorge Luis Borges (1899-1986) fue un maestro del cuento filosófico', 'Fue director de la Biblioteca Nacional Argentina a pesar de quedarse ciego', 'Sus cuentos mezclan filosofía, matemáticas y literatura', 'Nunca ganó el Nobel, pero es considerado uno de los escritores más importantes del siglo XX'],
+        fragmento: `"El hombre le dijo que se apurara. Dahlmann resolvió que el mundo le debía una aventura. Salió al llano, sin esperanza, pero sin temor tampoco."`,
+        contexto: 'Borges escribía laberintos mentales. "El Sur" plantea un misterio: ¿está Dahlmann realmente en el tren o todo ocurre en su mente mientras agoniza en el hospital? El lector debe decidir.'
+      }
+    },
+    {
+      id:'ll3', titulo:'La noche boca arriba', autor:'Julio Cortázar (1956)', emoji:'🌙',
+      fichaEmoji:'🔮', tag:'tag-latinoam', bannerClass:'latinoam-banner',
+      desc:'Un motociclista accidentado sueña que es un guerrero azteca — o quizás es al revés',
+      texto:`<h3>🌙 La noche boca arriba (fragmento adaptado)</h3>
+      <p>Un hombre en moto tiene un accidente en Buenos Aires y termina en el hospital. Bajo los efectos de la anestesia, comienza a tener <strong>sueños vívidos</strong>: es un guerrero moteca en el México antiguo, huyendo de los aztecas que cazan humanos para sus sacrificios.</p>
+      <p>Los dos mundos se alternan: el hospital con sus olores a éter y enfermeras, y el bosque oscuro con el olor a barro y el sonido de tambores. Cada vez que cierra los ojos en el hospital, despierta en el bosque. Cada vez que se duerme en el bosque, abre los ojos al hospital.</p>
+      <p>Al final, la verdad se invierte en un instante de terror: el hombre que <strong>cree ser el motociclista</strong> y sueña ser guerrero... quizás es el guerrero azteca que sueña con un mundo de metal y asfalto. ¿Cuál es el sueño y cuál es la realidad?</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Julio Cortázar',
+        curiosidades: ['Julio Cortázar nació en Bélgica en 1914 pero fue argentino de corazón', 'Vivió exiliado en París por razones políticas', 'Inventó el "cronopio", un ser imaginario alegre y desordenado', 'Su novela Rayuela puede leerse en cualquier orden — el lector elige el camino'],
+        fragmento: `"Casi no había tiempo, pero los tiempos se acortaban a cada instante. El olor a guerra era insoportable."`,
+        contexto: 'Cortázar pertenece al "Boom Latinoamericano", el período más importante de la literatura en español del siglo XX. Sus cuentos rompen la frontera entre lo real y lo imaginario.'
+      }
+    }
+  ],
+  poesia: [
+    {
+      id:'lp1', titulo:'Oda a la cebolla', autor:'Pablo Neruda (1954)', emoji:'🧅',
+      fichaEmoji:'🌸', tag:'tag-poesia', bannerClass:'poesia-banner',
+      desc:'El poeta chileno celebra la humilde cebolla como si fuera una estrella del universo',
+      texto:`<h3>🌸 Oda a la cebolla — Pablo Neruda</h3>
+      <p>Pablo Neruda escribió sus <em>Odas elementales</em> celebrando objetos cotidianos como si fueran maravillas del universo. La cebolla, el tomate, los calcetines... Todo merecía un poema.</p>
+      <p>En su <strong>"Oda a la cebolla"</strong>, describe este vegetal como una <em>"rosa de agua"</em>, como una <em>"lámpara de cristal"</em>, como un planeta de capas y secretos. La cebolla que hace llorar al que la corta se convierte en símbolo de belleza escondida en lo simple.</p>
+      <p>Neruda nos enseña que la poesía está en todas partes: en la cocina, en el mercado, en los objetos que usamos sin mirarlos. La tarea del poeta es <strong>ver lo extraordinario en lo ordinario</strong> y devolvérselo al mundo con palabras que suenen como música.</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Pablo Neruda',
+        curiosidades: ['Pablo Neruda nació en Chile en 1904 y murió en 1973', 'Su nombre real era Ricardo Eliécer Neftalí Reyes Basoalto', 'Ganó el Premio Nobel de Literatura en 1971', 'Escribió más de 3.000 poemas a lo largo de su vida'],
+        fragmento: `"Cebolla, luminosa redoma, pétalo a pétalo se formó tu hermosura, escamas de cristal te acrecentaron y en el secreto de la tierra oscura se redondeó tu vientre de rocío."`,
+        contexto: 'Las Odas Elementales fueron escritas para que cualquier persona, aunque no conociera la poesía, pudiera leerlas y entenderlas. Neruda quería democratizar la poesía, llevarla al mercado y a las manos de los trabajadores.'
+      }
+    },
+    {
+      id:'lp2', titulo:'Hombres necios que acusáis', autor:'Sor Juana Inés de la Cruz (1689)', emoji:'✍️',
+      fichaEmoji:'💜', tag:'tag-poesia', bannerClass:'poesia-banner',
+      desc:'La primera gran poeta latinoamericana desafía la hipocresía de los hombres de su época',
+      texto:`<h3>✍️ Hombres necios — Sor Juana Inés de la Cruz</h3>
+      <p>En el México colonial del siglo XVII, cuando las mujeres no tenían derecho a estudiar ni opinar, una monja extraordinaria tomó su pluma y escribió uno de los poemas más valientes de la historia latinoamericana.</p>
+      <p>Sor Juana confronta a los hombres que critican a las mujeres por los mismos comportamientos que ellos mismos provocan o admiran: <em>"Hombres necios que acusáis a la mujer sin razón, sin ver que sois la ocasión de lo mismo que culpáis."</em></p>
+      <p>Este poema, escrito hace más de trescientos años, sigue siendo una declaración de igualdad y justicia. Sor Juana fue autodidacta, científica, filósofa y poeta en una época que intentó silenciarla. Su voz sobrevivió.</p>`,
+      infoExtra: {
+        titulo: '📚 Más sobre Sor Juana Inés de la Cruz',
+        curiosidades: ['Nació en México en 1648 y murió en 1695', 'Aprendió a leer sola a los 3 años', 'Se vistió de hombre para poder entrar a la universidad — se lo negaron', 'Se hizo monja para tener tiempo de estudiar y escribir libremente'],
+        fragmento: `"¿Cuál mayor culpa ha tenido en una pasión errada: la que cae de rogada, o el que ruega de caído?"`,
+        contexto: 'Sor Juana es considerada la primera feminista de América. Vivió en el convento de San Jerónimo en Ciudad de México, donde construyó una biblioteca de más de 4.000 libros. La Inquisición la presionó para que dejara de escribir.'
+      }
+    },
+    {
+      id:'lp3', titulo:'Veinte poemas de amor: Puedo escribir', autor:'Pablo Neruda (1924)', emoji:'💙',
+      fichaEmoji:'🌙', tag:'tag-poesia', bannerClass:'poesia-banner',
+      desc:'El poema más leído en español del siglo XX: la belleza del amor y la distancia',
+      texto:`<h3>💙 Puedo escribir los versos — Pablo Neruda</h3>
+      <p>A los veinte años, un joven poeta chileno escribió un libro que cambiaría la poesía en español para siempre: <em>Veinte poemas de amor y una canción desesperada</em>. El último poema comienza con una línea que millones de personas han sentido como propia:</p>
+      <p><em>"Puedo escribir los versos más tristes esta noche."</em></p>
+      <p>El poema habla de alguien que se fue, de una noche infinita, del amor que duele más cuando ya no está. Neruda mezcla el paisaje de Chile (el cielo, el viento, los árboles) con la imagen de una persona amada y ausente. La naturaleza llora con el poeta.</p>
+      <p>Lo que hace grande a este poema es su honestidad: no intenta explicar el amor ni curarlo. Solo lo <strong>nombra, lo mira de frente y lo deja ser</strong>.</p>`,
+      infoExtra: {
+        titulo: '📚 Curiosidades de este poema',
+        curiosidades: ['Neruda tenía solo 19 años cuando escribió este libro', 'Se ha traducido a más de 35 idiomas', 'Es el libro de poesía más vendido de la historia en español', 'El poema fue la inspiración de la película "El cartero de Neruda" (Il Postino, 1994)'],
+        fragmento: `"Puedo escribir los versos más tristes esta noche. Escribir, por ejemplo: 'La noche está estrellada, y tiritan, azules, los astros, a lo lejos.'"`,
+        contexto: 'Este poema fue escrito en la ciudad de Temuco, Chile, con el ruido de la lluvia y el frío del sur. Neruda lo escribió pensando en dos mujeres distintas — la poesía surgió del conflicto entre esos dos amores.'
+      }
+    }
+  ]
+};
+
+const CAT_INFO = {
+  ciencia:{nombre:'Ciencia 🔬',emoji:'🔬'},
+  animales:{nombre:'Animales 🦋',emoji:'🦋'},
+  emociones:{nombre:'Emociones 💝',emoji:'💝'},
+  arte:{nombre:'Arte 🎨',emoji:'🎨'},
+  superheroes:{nombre:'Superhéroes ⚡',emoji:'⚡'},
+  historia:{nombre:'Historia 🏛️',emoji:'🏛️'}
+};
+const SEXTO_CAT_INFO = {
+  clasica:{nombre:'Literatura Clásica',emoji:'🎭'},
+  latinoam:{nombre:'Literatura Latinoamericana',emoji:'🌿'},
+  poesia:{nombre:'Poesía Latinoamericana',emoji:'🌸'}
+};
+const TOTAL_FICHAS = 18 + 9; // 27
+
+// ══════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════
+function mostrarPantalla(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function irHome() { actualizarHome(); mostrarPantalla('screen-home'); }
+function irAlbum() { renderAlbum(); mostrarPantalla('screen-album'); }
+function irSexto() { mostrarPantalla('screen-sexto'); }
+
+function guardarApi() { mostrarPantalla('screen-registro'); }
+
+let gradoSeleccionado = 0;
+function selGrado(g) {
+  gradoSeleccionado = g;
+  document.querySelectorAll('.grado-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.grado-btn')[g-1].classList.add('selected');
+  document.getElementById('error-grado').classList.remove('show');
+  document.getElementById('sexto-hint').classList.toggle('show', g===6);
+}
+
+function comenzar() {
+  const nombre = document.getElementById('nombre-input').value.trim();
+  let ok = true;
+  if (!nombre) { document.getElementById('error-nombre').classList.add('show'); ok=false; }
+  else document.getElementById('error-nombre').classList.remove('show');
+  if (!gradoSeleccionado) { document.getElementById('error-grado').classList.add('show'); ok=false; }
+  if (!ok) return;
+  estado.nombre = nombre;
+  estado.grado = gradoSeleccionado;
+  renderSextoGrids();
+  actualizarHome();
+  mostrarPantalla('screen-home');
+}
+
+function actualizarHome() {
+  document.getElementById('top-name').textContent = estado.nombre;
+  const gradeEl = document.getElementById('top-grade');
+  gradeEl.textContent = `${estado.grado}° Grado Primaria`;
+  gradeEl.className = 'top-bar-grade' + (estado.grado===6?' sexto-grade':'');
+  document.getElementById('welcome-text').textContent = `¡Hola, ${estado.nombre}! 🐝`;
+  document.getElementById('stars-count').textContent = estado.estrellas;
+  document.getElementById('banner-sexto').style.display = estado.grado===6 ? 'flex' : 'none';
+
+  ['ciencia','animales','emociones','arte','superheroes','historia'].forEach(cat=>{
+    const completadas = LECTURAS[cat].filter(l=>estado.fichasDesbloqueadas.includes(l.id)).length;
+    document.getElementById(`prog-${cat}`).style.width=(completadas/3*100)+'%';
+    document.getElementById(`cnt-${cat}`).textContent=`${completadas}/3`;
+  });
+}
+
+// ── Sección 6to ──
+function cambiarTabSexto(cat, btn) {
+  document.querySelectorAll('.sexto-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.sexto-cat-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel-${cat}`).classList.add('active');
+}
+
+function renderSextoGrids() {
+  ['clasica','latinoam','poesia'].forEach(cat=>{
+    const grid = document.getElementById(`grid-${cat}`);
+    if (!grid) return;
+    grid.innerHTML = '';
+    LECTURAS_SEXTO[cat].forEach(lectura=>{
+      const completada = estado.fichasDesbloqueadas.includes(lectura.id);
+      const card = document.createElement('div');
+      card.className = `sexto-lectura-card${completada?' completada':''}`;
+      card.innerHTML = `
+        <div class="sexto-card-banner ${lectura.bannerClass}">${lectura.emoji}</div>
+        <div class="sexto-card-body">
+          <div class="sexto-lectura-titulo">${lectura.titulo}</div>
+          <div class="sexto-lectura-autor">${lectura.autor}</div>
+          <div class="sexto-lectura-desc">${lectura.desc}</div>
+          <div class="sexto-tags">
+            <span class="tag ${lectura.tag}">${SEXTO_CAT_INFO[cat].nombre}</span>
+            ${completada?'<span class="tag tag-completada">⭐ Completada</span>':''}
+          </div>
+          <button class="sexto-lectura-btn">${completada?'🔁 Releer':'📖 Leer y conversar'}</button>
+        </div>`;
+      card.onclick = () => iniciarLecturaSexto(lectura, cat);
+      grid.appendChild(card);
+    });
+  });
+}
+
+// ── Categorías 1-5 ──
+function irCategoria(cat) {
+  estado.categoriaActual = cat;
+  estado.esSeccionSexto = false;
+  document.getElementById('cat-titulo').textContent = CAT_INFO[cat].nombre;
+  document.getElementById('lecturas-back-btn').onclick = irHome;
+  document.getElementById('lecturas-back-btn').className = 'back-btn';
+  const grid = document.getElementById('lecturas-grid');
+  grid.innerHTML = '';
+  LECTURAS[cat].forEach(lectura=>{
+    const completada = estado.fichasDesbloqueadas.includes(lectura.id);
+    const card = document.createElement('div');
+    card.className = `lectura-card${completada?' completada':''}`;
+    card.innerHTML = `
+      <div class="lectura-emoji">${lectura.emoji}</div>
+      <div class="lectura-titulo">${lectura.titulo}</div>
+      <div class="lectura-desc">${lectura.desc}</div>
+      <span class="lectura-badge ${completada?'badge-completada':'badge-nueva'}">${completada?'⭐ Completada':'📖 Nueva aventura'}</span>
+      <div class="leer-btn"><span>${completada?'🔁 Releer':'▶ Comenzar'}</span><span>→</span></div>`;
+    card.onclick = () => iniciarLectura(lectura, false);
+    grid.appendChild(card);
+  });
+  mostrarPantalla('screen-lecturas');
+}
+
+// ══════════════════════════════════════
+// INICIAR LECTURA
+// ══════════════════════════════════════
+function iniciarLectura(lectura, esSexto) {
+  estado.lecturaActual = lectura;
+  estado.esSeccionSexto = esSexto || false;
+  estado.historialChat = [];
+  estado.mensajesEnviados = 0;
+
+  document.getElementById('chat-lectura-titulo').textContent = lectura.titulo;
+
+  // Contenido del texto
+  const contDiv = document.getElementById('lectura-contenido-text');
+  contDiv.className = `lectura-contenido${esSexto?' sexto-modo':''}`;
+  contDiv.innerHTML = lectura.texto;
+
+  // Si es 6to, agregar botón de info extra
+  if (esSexto && lectura.infoExtra) {
+    const ie = lectura.infoExtra;
+    const btn = document.createElement('button');
+    btn.className = 'info-extra-btn';
+    btn.innerHTML = `🔍 Curiosidades y fragmentos — ${ie.titulo}`;
+    const panel = document.createElement('div');
+    panel.className = 'info-extra-panel';
+    panel.innerHTML = `
+      <h4>${ie.titulo}</h4>
+      <p>${ie.contexto}</p>
+      <div class="fragmento-box">"${ie.fragmento}"</div>
+      <div>${ie.curiosidades.map(c=>`<span class="curiosidad-chip">✨ ${c}</span>`).join('')}</div>`;
+    btn.onclick = () => { panel.classList.toggle('open'); btn.innerHTML = panel.classList.contains('open') ? `▲ Ocultar información` : `🔍 Curiosidades y fragmentos — ${ie.titulo}`; };
+    contDiv.appendChild(btn);
+    contDiv.appendChild(panel);
+  }
+
+  // Subtítulo de Muti
+  document.getElementById('muti-subtitle').textContent = esSexto
+    ? 'Modo Literatura • Socrático avanzado'
+    : 'La abeja socrática • Modo Mayéutica';
+
+  // Botón volver
+  document.getElementById('chat-back-btn').onclick = esSexto ? () => { irSexto(); } : () => { irLecturas(); };
+  document.getElementById('chat-back-btn').className = `back-btn${esSexto?' purple':''}`;
+
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('finalizar-btn').style.display = 'none';
+  document.getElementById('msg-count').textContent = 'Mínimo 3 respuestas para desbloquear la ficha';
+  mostrarPantalla('screen-chat');
+  setTimeout(() => mutiInicia(), 600);
+}
+
+function iniciarLecturaSexto(lectura, cat) {
+  estado.categoriaActual = cat;
+  iniciarLectura(lectura, true);
+}
+
+function irLecturas() { mostrarPantalla('screen-lecturas'); }
+
+function chatVolver() {
+  if (estado.esSeccionSexto) irSexto();
+  else irLecturas();
+}
+
+// ══════════════════════════════════════
+// MUTI — CHAT IA
+// ══════════════════════════════════════
+function mutiInicia() {
+  const msg = `¡Bzzzt! ¡Hola, ${estado.nombre}! 🐝 Acabas de leer "${estado.lecturaActual.titulo}". ¡Qué ${estado.esSeccionSexto?'obra tan poderosa':'lectura tan interesante'}! Cuéntame... ¿qué fue lo que más te llamó la atención o te hizo pensar, bzzzzt?`;
+  agregarMsgMuti(msg);
+  estado.historialChat.push({role:'assistant',content:msg});
+}
+
+function agregarMsgMuti(texto) {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = 'msg msg-muti';
+  d.innerHTML = `<div class="msg-avatar">🐝</div><div class="msg-bubble">${texto}</div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function agregarMsgUser(texto) {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = 'msg msg-user';
+  d.innerHTML = `<div class="msg-avatar">😊</div><div class="msg-bubble">${texto}</div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function mostrarTyping() {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = 'msg msg-muti msg-typing'; d.id = 'typing-indicator';
+  d.innerHTML = `<div class="msg-avatar">🐝</div><div class="msg-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function quitarTyping() { const t=document.getElementById('typing-indicator'); if(t) t.remove(); }
+
+async function enviarMsg() {
+  const input = document.getElementById('chat-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+  input.value = ''; input.style.height = '44px';
+  document.getElementById('send-btn').disabled = true;
+  agregarMsgUser(texto);
+  estado.historialChat.push({role:'user',content:texto});
+  estado.mensajesEnviados++;
+  if (estado.mensajesEnviados >= 3) {
+    document.getElementById('finalizar-btn').style.display = 'block';
+    document.getElementById('msg-count').textContent = '¡Ya puedes finalizar y obtener tu ficha! 🎉';
+  }
+  mostrarTyping();
+  try {
+    const resp = await llamarMuti();
+    quitarTyping();
+    agregarMsgMuti(resp);
+    estado.historialChat.push({role:'assistant',content:resp});
+  } catch(e) {
+    quitarTyping();
+    agregarMsgMuti(`¡Bzzzt! Mis antenas tuvieron un problema. ¿Intentamos de nuevo, ${estado.nombre}? 🐝`);
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+async function llamarMuti() {
+  const esSexto = estado.esSeccionSexto;
+  const systemPrompt = esSexto
+    ? `Eres Muti, la abeja socrática de Mayeuti. Guías a ${estado.nombre}, estudiante de 6to grado, a través del método socrático avanzado para la obra literaria "${estado.lecturaActual.titulo}" de ${estado.lecturaActual.autor}.
+
+REGLAS PARA SECCIÓN LITERARIA (6to):
+1. Máximo 2-3 oraciones por respuesta.
+2. JAMÁS des respuestas directas. Usa la mayéutica para que el estudiante descubra.
+3. En esta sección SÍ puedes mencionar datos del autor, época histórica o contexto literario SOLO si el estudiante lo pregunta explícitamente (como "¿quién es este autor?" o "¿cuándo vivió?"). Si no pregunta, mantén el método socrático puro.
+4. Escala: literal → inferencial → crítico → conexión personal → evaluación estética.
+5. Preguntas tipo: "¿Por qué crees que el autor eligió esas palabras?", "¿Qué dice esto sobre la condición humana?", "¿Reconoces esto en tu propia vida?".
+6. Usa el nombre ${estado.nombre} y termina con "bzzzt?" o "bzzzt!".
+7. Refuerzo: "¡Tus antenas literarias están activas!", "¡Eso es pensar como crítico!", "¡Bzzzt, excelente reflexión!".`
+    : `Eres Muti, la abeja socrática de Mayeuti. Guías a ${estado.nombre}, de ${estado.grado}° grado, con el método socrático sobre "${estado.lecturaActual.titulo}".
+
+REGLAS:
+1. Máximo 2 oraciones. Nunca des la respuesta directa.
+2. Escala: literal → inferencial → crítico. Usa el nombre del niño.
+3. Si algo está mal, pregunta: "¿Pero cómo podría ser X si el texto dice Y?".
+4. Refuerzo: "¡Tus antenas están despiertas!", "¡Bzzzt excelente!".
+5. Vocabulario adaptado al grado ${estado.grado}. Termina con "bzzzzt?" o "bzzzt!".
+6. NUNCA expliques ni des información extra — solo preguntas socráticas.`;
+
+  const response = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:220,system:systemPrompt,messages:estado.historialChat})
+  });
+  if (!response.ok) { const e=await response.json(); throw new Error(e.error?.message||'Error'); }
+  const data = await response.json();
+  return data.content[0].text;
+}
+
+async function finalizarChat() {
+  document.getElementById('finalizar-btn').disabled = true;
+  document.getElementById('finalizar-btn').textContent = '⏳ Generando tu resumen...';
+  mostrarTyping();
+  const resumen = await generarResumen();
+  quitarTyping();
+  if (!estado.fichasDesbloqueadas.includes(estado.lecturaActual.id)) {
+    estado.fichasDesbloqueadas.push(estado.lecturaActual.id);
+    estado.estrellas++;
+  }
+  document.getElementById('ficha-animada').textContent = estado.lecturaActual.fichaEmoji;
+  document.getElementById('recompensa-logro').innerHTML = `<strong>¡Bzzz! Has descubierto el tesoro de "${estado.lecturaActual.titulo}".</strong><br><br>${resumen}`;
+  renderSextoGrids();
+  lanzarConfetti();
+  mostrarPantalla('screen-recompensa');
+}
+
+async function generarResumen() {
+  const conv = estado.historialChat.map(m=>`${m.role==='user'?estado.nombre:'Muti'}: ${m.content}`).join('\n');
+  try {
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:280,
+        system:`Eres Muti la abeja socrática. Crea un cierre de síntesis cálido y motivador para ${estado.nombre} (${estado.grado}° grado). Destaca: (1) qué descubrió en la conversación, (2) cuál fue su reflexión más profunda, (3) conexión con la vida real o la condición humana${estado.esSeccionSexto?', (4) qué hace especial a esta obra literaria':''} . Máximo 4 oraciones. Habla directamente usando el nombre. Incluye emojis de abeja.`,
+        messages:[{role:'user',content:`Conversación sobre "${estado.lecturaActual.titulo}":\n${conv}`}]})
+    });
+    const d = await response.json();
+    return d.content[0].text;
+  } catch(e) {
+    return `¡${estado.nombre}, has hecho un trabajo increíble explorando "${estado.lecturaActual.titulo}"! 🐝 Tu curiosidad y reflexiones demuestran que tienes la mente de un verdadero explorador. ¡Sigue así!`;
+  }
+}
+
+function continuarExplorando() {
+  actualizarHome();
+  if (estado.esSeccionSexto) irSexto();
+  else irCategoria(estado.categoriaActual);
+}
+
+// ══════════════════════════════════════
+// ÁLBUM
+// ══════════════════════════════════════
+function renderAlbum() {
+  const total = estado.fichasDesbloqueadas.length;
+  document.getElementById('album-prog-fill').style.width=(total/TOTAL_FICHAS*100)+'%';
+  document.getElementById('album-prog-label').textContent=`${total} / ${TOTAL_FICHAS} fichas`;
+  const content = document.getElementById('album-content');
+  content.innerHTML = '';
+
+  // Secciones 1-5
+  Object.entries(LECTURAS).forEach(([cat, lecturas])=>{
+    const sec = document.createElement('div'); sec.className='album-seccion';
+    sec.innerHTML = `<div class="album-seccion-title">${CAT_INFO[cat].emoji} ${CAT_INFO[cat].nombre}</div>`;
+    const grid = document.createElement('div'); grid.className='fichas-grid';
+    lecturas.forEach(l=>{
+      const desbloqueada = estado.fichasDesbloqueadas.includes(l.id);
+      const f = document.createElement('div');
+      f.className=`ficha${desbloqueada?' desbloqueada':' bloqueada'}`;
+      f.innerHTML=`<div class="ficha-icono">${desbloqueada?l.fichaEmoji:'❓'}</div><div class="ficha-nombre">${desbloqueada?l.titulo:'???'}</div>${desbloqueada?'<div class="ficha-oro">⭐</div>':'<div class="ficha-lock">🔒</div>'}`;
+      grid.appendChild(f);
+    });
+    sec.appendChild(grid); content.appendChild(sec);
+  });
+
+  // Sección 6to
+  if (estado.grado === 6 || estado.fichasDesbloqueadas.some(id=>['lc1','lc2','lc3','ll1','ll2','ll3','lp1','lp2','lp3'].includes(id))) {
+    const divider = document.createElement('div');
+    divider.innerHTML = `<div style="margin:16px 0;padding:14px 16px;background:linear-gradient(135deg,#F3EEFF,#EDE9FE);border-radius:16px;text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--sexto-purpura);">📖 Sección Literaria — 6to Grado</div>
+    </div>`;
+    content.appendChild(divider);
+
+    Object.entries(LECTURAS_SEXTO).forEach(([cat,lecturas])=>{
+      const sec = document.createElement('div'); sec.className='album-seccion';
+      sec.innerHTML=`<div class="album-seccion-title sexto-title">${SEXTO_CAT_INFO[cat].emoji} ${SEXTO_CAT_INFO[cat].nombre}</div>`;
+      const grid = document.createElement('div'); grid.className='fichas-grid';
+      lecturas.forEach(l=>{
+        const desbloqueada = estado.fichasDesbloqueadas.includes(l.id);
+        const f = document.createElement('div');
+        f.className=`ficha sexto-ficha${desbloqueada?' desbloqueada':' bloqueada'}`;
+        f.innerHTML=`<div class="ficha-icono">${desbloqueada?l.fichaEmoji:'❓'}</div><div class="ficha-nombre">${desbloqueada?l.titulo:'???'}</div>${desbloqueada?'<div class="ficha-oro">⭐</div>':'<div class="ficha-lock">🔒</div>'}`;
+        grid.appendChild(f);
+      });
+      sec.appendChild(grid); content.appendChild(sec);
+    });
+  }
+}
+
+// ══════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════
+function lanzarConfetti() {
+  const c = document.getElementById('confetti-container');
+  const cols = ['#5BB8E8','#7DD97A','#F5C842','#FF8FAB','#A78BFA','#FB923C','#7C3AED'];
+  c.innerHTML = '';
+  for(let i=0;i<70;i++){
+    const p = document.createElement('div'); p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.background=cols[Math.floor(Math.random()*cols.length)];
+    p.style.animationDuration=(1.5+Math.random()*2)+'s';
+    p.style.animationDelay=Math.random()*1+'s';
+    p.style.width=(8+Math.random()*8)+'px'; p.style.height=p.style.width;
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.innerHTML='',4000);
+}
+
+function autoResize(el) { el.style.height='44px'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+</script>
+</body>
+</html>
